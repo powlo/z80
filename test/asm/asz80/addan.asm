@@ -1,0 +1,68 @@
+; *******************************
+; ADD a,n
+; *******************************
+
+addan:
+;------------------------------------------------
+; Simple Test
+;------------------------------------------------
+   call rst_reg
+   
+	ld	a,#0H01		; simple 1+1 to get started
+	ld	b,#0H01
+	add	b
+	jp	z,		fail			; Check all the flags to
+	jp	c,		fail			; make sure that the calculation
+	jp	pe,	fail			; was performed correctly in
+	jp	m,		fail			; the F flag.
+	cp	#0H02			; Check the result in A register
+	jp	nz,	fail
+
+;------------------------------------------------
+; Overflow
+;------------------------------------------------
+   call rst_reg
+
+	ld	a,#0H40		; 40+45 = neg number :- overflow
+	ld	c,#0H45
+	add	c
+	;-------------------------------------------------
+	jp	z,		fail			; flag check
+	jp	c,		fail			
+	jp	po,	fail			
+	jp	p,		fail			
+	;-------------------------------------------------
+	cp	#0H85
+	jp	nz,	fail
+
+;------------------------------------------------
+; Half Carry
+;------------------------------------------------
+	ld	a,#0H08		; 8+A = 12 :- Half carry
+	ld	d,#0H0A
+	add	d
+	;-------------------------------------------------
+	jp	z,		fail			; flag check
+	jp	c,		fail			
+	jp	pe,	fail			
+	jp	m,		fail			
+	;-------------------------------------------------
+	cp	#0H12
+	jp	nz,	fail
+
+;------------------------------------------------
+; Carry
+;------------------------------------------------
+	ld	a,#0H80		; 80+FF = 7F :- Carry
+	ld	e,#0HFF
+	add	e
+	;-------------------------------------------------
+	jp	z,		fail			; flag check
+	jp	nc,	fail			
+	jp	po,	fail			
+	jp	m,		fail			
+	;-------------------------------------------------
+	cp	#0H7F
+	jp	nz,	fail
+
+   ret
